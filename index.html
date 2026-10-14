@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Maharashtra - Car Accessories & Decor Contacts</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <div class="container">
+        <!-- Header Banner -->
+        <header class="app-header">
+            <div class="header-content">
+                <div class="state-tag">📍 Maharashtra</div>
+                <h1>Car Accessories & Decor Directory</h1>
+                <p>Direct WhatsApp Outreach & Follow-up Tracker</p>
+            </div>
+            <!-- Progress & Stats Cards -->
+            <div class="kpi-cards">
+                <div class="kpi-card">
+                    <span class="kpi-label">Total Shops</span>
+                    <strong class="kpi-val" id="totalCount">74</strong>
+                </div>
+                <div class="kpi-card success">
+                    <span class="kpi-label">Contacted</span>
+                    <strong class="kpi-val" id="completedCount">0</strong>
+                </div>
+                <div class="kpi-card warning">
+                    <span class="kpi-label">Pending</span>
+                    <strong class="kpi-val" id="pendingCount">74</strong>
+                </div>
+            </div>
+        </header>
+
+        <!-- Progress Bar -->
+        <div class="progress-bar-container">
+            <div class="progress-bar" id="progressBar" style="width: 0%"></div>
+        </div>
+
+        <!-- Controls Toolbar -->
+        <div class="toolbar">
+            <div class="search-box">
+                <span class="search-icon">🔍</span>
+                <input type="text" id="searchInput" placeholder="Search by shop name or phone number..." autocomplete="off">
+                <button id="clearSearch" class="clear-search-btn" title="Clear search" style="display: none;">✕</button>
+            </div>
+
+            <div class="filter-tabs">
+                <button class="filter-btn active" data-filter="all">All (<span id="tabAllCount">74</span>)</button>
+                <button class="filter-btn" data-filter="contacted">Contacted (<span id="tabContactedCount">0</span>)</button>
+                <button class="filter-btn" data-filter="pending">Pending (<span id="tabPendingCount">74</span>)</button>
+            </div>
+
+            <div class="actions">
+                <button id="copyContactedBtn" class="action-btn copy-btn" title="Copy contacted phone numbers">📋 Copy Done</button>
+                <button id="resetBtn" class="action-btn reset-btn" title="Reset all checked status">🔄 Reset All</button>
+            </div>
+        </div>
+
+        <!-- Directory Table -->
+        <div class="table-wrapper">
+            <table class="shop-table">
+                <thead>
+                    <tr>
+                        <th class="th-num">#</th>
+                        <th class="th-cb">
+                            <input type="checkbox" id="selectAll" title="Select / Deselect all visible">
+                        </th>
+                        <th class="th-name">Shop Name</th>
+                        <th class="th-phone">Contact Number</th>
+                        <th class="th-wa">WhatsApp Chat</th>
+                        <th class="th-status">Status</th>
+                    </tr>
+                </thead>
+                <tbody id="shopTableBody">
+                    <!-- Rows rendered dynamically by JS -->
+                </tbody>
+            </table>
+            <div id="noResults" class="no-results" style="display: none;">
+                <p>No matching shops found</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="toast"></div>
+
+    <script>
+        // Full Maharashtra dataset (74 shops)
+        const SHOPS_DATA = [
+  {
+    "id": "shop_1_bramha_car_decor",
+    "name": "Bramha Car Decor",
+    "displayPhone": "9405770505",
+    "cleanPhone": "9405770505"
+  },
+  {
+    "id": "shop_2_jay_ganesh",
+    "name": "Jay Ganesh",
+    "displayPhone": "9981397676",
+    "cleanPhone": "9981397676"
+  },
+  {
+    "id": "shop_3_laxman_auto_stores___car_spares___accessories",
+    "name": "Laxman Auto Stores - Car Spares & Accessories",
+    "displayPhone": "982035526",
+    "cleanPhone": "982035526"
+  },
+  {
+    "id": "shop_4_mauli_car_accessories",
+    "name": "Mauli Car Accessories",
+    "displayPhone": "Not Provided",
+    "cleanPhone": ""
+  },
+  {
+    "id": "shop_5_car_n_style",
+    "name": "CAR N STYLE",
+    "displayPhone": "91672 75191",
+    "cleanPhone": "9167275191"
+  },
+  {
+    "id": "shop_6_laxmi_auto_centre",
+    "name": "Laxmi Auto Centre",
+    "displayPhone": "98703 10000",
+    "cleanPhone": "9870310000"
+  },
+  {
+    "id": "shop_7_om_car_decor",
+    "name": "Om Car Decor",
+    "displayPhone": "80 4805 9466",
+    "cleanPhone": "8048059466"
+  },
+  {
+    "id": "shop_8_premium_car_decor",
+    "name": "Premium Car Decor",
+    "displayPhone": "76668 83817",
+    "cleanPhone": "7666883817"
+  },
+  {
+    "id": "shop_9_jayshree_car_decor",
+    "name": "Jayshree Car Decor",
+    "displayPhone": "73978 64631",
+    "cleanPhone": "7397864631"
+  },
+  {
+    "id": "shop_10_yash_car_accessories",
+    "name": "YASH CAR ACCESSORIES",
+    "displayPhone": "99222 95665",
+    "cleanPhone": "9922295665"
+  },
+  {
+    "id": "shop_11_metro_car_accessories",
+    "name": "Metro Car Accessories",
+    "displayPhone": "83292 25310",
+    "cleanPhone": "8329225310"
+  },
+  {
+    "id": "shop_12_shree_hari_car_decor",
+    "name": "Shree Hari Car Decor",
+    "displayPhone": "97275 75600",
+    "cleanPhone": "9727575600"
+  },
+  {
+    "id": "shop_13_m_car_care",
+    "name": "M CAR CARE",
+    "displayPhone": "88558 29930",
+    "cleanPhone": "8855829930"
+  },
+  {
+    "id": "shop_14_mh_15_car_decor",
+    "name": "MH-15 CAR DECOR",
+    "displayPhone": "98228 39661",
+    "cleanPhone": "9822839661"
+  },
+  {
+    "id": "shop_15_auto_looks_car",
+    "name": "Auto Looks Car",
+    "displayPhone": "84519 14285",
+    "cleanPhone": "8451914285"
+  },
+  {
+    "id": "shop_16_paras_car_decor",
+    "name": "Paras Car Decor",
+    "displayPhone": "9892291424",
+    "cleanPhone": "9892291424"
+  },
+  {
+    "id": "shop_17_eknath_car_decor",
+    "name": "Eknath Car Decor",
+    "displayPhone": "93739 05760",
+    "cleanPhone": "9373905760"
+  },
+  {
+    "id": "shop_18_hira_moti_car_accessories",
+    "name": "Hira moti Car Accessories",
+    "displayPhone": "94231 51116",
+    "cleanPhone": "9423151116"
+  },
+  {
+    "id": "shop_19_om_car_studio",
+    "name": "Om Car Studio",
+    "displayPhone": "95450 41313",
+    "cleanPhone": "9545041313"
+  },
+  {
+    "id": "shop_20_pride_x_car_decor",
+    "name": "PRIDE X CAR DECOR",
+    "displayPhone": "093566 25980",
+    "cleanPhone": "9356625980"
+  },
+  {
+    "id": "shop_21_palak_car_decor",
+    "name": "Palak car decor",
+    "displayPhone": "97688 48385",
+    "cleanPhone": "9768848385"
+  },
+  {
+    "id": "shop_22_sony_car_decor",
+    "name": "Sony Car Decor",
+    "displayPhone": "90969 80589",
+    "cleanPhone": "9096980589"
+  },
+  {
+    "id": "shop_23_vijay_auto_accessories",
+    "name": "Vijay Auto Accessories",
+    "displayPhone": "70217 11311",
+    "cleanPhone": "7021711311"
+  },
+  {
+    "id": "shop_24_bhavi_motors__car_accessories",
+    "name": "Bhavi Motors: Car Accessories",
+    "displayPhone": "98332 42532",
+    "cleanPhone": "9833242532"
+  },
+  {
+    "id": "shop_25_supreme_car_decor",
+    "name": "Supreme car decor",
+    "displayPhone": "98901 02910",
+    "cleanPhone": "9890102910"
+  },
+  {
+    "id": "shop_26_shradha_car_shringar",
+    "name": "Shradha Car Shringar",
+    "displayPhone": "98196 97980",
+    "cleanPhone": "9819697980"
+  },
+  {
+    "id": "shop_27_sigma_car_decor",
+    "name": "Sigma Car Decor",
+    "displayPhone": "98250 81149",
+    "cleanPhone": "9825081149"
+  },
+  {
+    "id": "shop_28_genuine_car_accessories",
+    "name": "Genuine Car Accessories",
+    "displayPhone": "98228 60542",
+    "cleanPhone": "9822860542"
+  },
+  {
+    "id": "shop_29_magic_car_decor",
+    "name": "MAGIC CAR DECOR",
+    "displayPhone": "98227 96262",
+    "cleanPhone": "9822796262"
+  },
+  {
+    "id": "shop_30_walia_car_decor",
+    "name": "Walia car decor",
+    "displayPhone": "98600 12111",
+    "cleanPhone": "9860012111"
+  },
+  {
+    "id": "shop_31_maharashtra_car_accessories",
+    "name": "Maharashtra car accessories",
+    "displayPhone": "75175 11185",
+    "cleanPhone": "7517511185"
+  },
+  {
+    "id": "shop_32_almighty_enterprises",
+    "name": "Almighty Enterprises",
+    "displayPhone": "94222 66441",
+    "cleanPhone": "9422266441"
+  },
+  {
+    "id": "shop_33_autoworld_car_accessories",
+    "name": "Autoworld Car Accessories",
+    "displayPhone": "90296 41898",
+    "cleanPhone": "9029641898"
+  },
+  {
+    "id": "shop_34_jay_mahakali_car_accessories",
+    "name": "Jay Mahakali Car Accessories",
+    "displayPhone": "93724 10633",
+    "cleanPhone": "9372410633"
+  },
+  {
+    "id": "shop_35_rajesh_car_decor",
+    "name": "Rajesh Car Decor",
+    "displayPhone": "86694 75855",
+    "cleanPhone": "8669475855"
+  },
+  {
+    "id": "shop_36_sm_auto___car_accessories",
+    "name": "SM AUTO | Car Accessories",
+    "displayPhone": "97377 72523",
+    "cleanPhone": "9737772523"
+  },
+  {
+    "id": "shop_37_laxmi_car_decor",
+    "name": "laxmi car decor",
+    "displayPhone": "70666 72101",
+    "cleanPhone": "7066672101"
+  },
+  {
+    "id": "shop_38_ajanta_car_decor_and_accessories",
+    "name": "Ajanta Car Decor And Accessories",
+    "displayPhone": "91723 65099",
+    "cleanPhone": "9172365099"
+  },
+  {
+    "id": "shop_39_car_accessories_shop",
+    "name": "Car Accessories Shop",
+    "displayPhone": "98504 96009",
+    "cleanPhone": "9850496009"
+  },
+  {
+    "id": "shop_40_deshmukh_car_accessories",
+    "name": "Deshmukh Car Accessories",
+    "displayPhone": "91756 10447",
+    "cleanPhone": "9175610447"
+  },
+  {
+    "id": "shop_41_sony_car_accessories",
+    "name": "Sony Car Accessories",
+    "displayPhone": "98905 13731",
+    "cleanPhone": "9890513731"
+  },
+  {
+    "id": "shop_42_bhandari_car_decor",
+    "name": "Bhandari Car Decor",
+    "displayPhone": "98224 75678",
+    "cleanPhone": "9822475678"
+  },
+  {
+    "id": "shop_43_abhishek_car_accessories",
+    "name": "Abhishek Car Accessories",
+    "displayPhone": "90280 48459",
+    "cleanPhone": "9028048459"
+  },
+  {
+    "id": "shop_44_satguru_car_accessories",
+    "name": "Satguru Car Accessories",
+    "displayPhone": "81699 13316",
+    "cleanPhone": "8169913316"
+  },
+  {
+    "id": "shop_45_b_s__auto_accessories",
+    "name": "B.S. Auto Accessories",
+    "displayPhone": "82681 96044",
+    "cleanPhone": "8268196044"
+  },
+  {
+    "id": "shop_46_ns_car_care",
+    "name": "NS car care",
+    "displayPhone": "91588 99331",
+    "cleanPhone": "9158899331"
+  },
+  {
+    "id": "shop_47_car_nation___car_accessories",
+    "name": "Car Nation - Car Accessories",
+    "displayPhone": "70573 45345",
+    "cleanPhone": "7057345345"
+  },
+  {
+    "id": "shop_48_maharashtra_car_decor",
+    "name": "Maharashtra car decor",
+    "displayPhone": "98348 31886",
+    "cleanPhone": "9834831886"
+  },
+  {
+    "id": "shop_49_new_perfect_car_decor",
+    "name": "New Perfect Car Decor",
+    "displayPhone": "91587 07880",
+    "cleanPhone": "9158707880"
+  },
+  {
+    "id": "shop_50_shivshambhu_car_accessories",
+    "name": "Shivshambhu Car Accessories",
+    "displayPhone": "93255 35431",
+    "cleanPhone": "9325535431"
+  },
+  {
+    "id": "shop_51_pratik_car_accessories",
+    "name": "Pratik Car Accessories",
+    "displayPhone": "98199 79816",
+    "cleanPhone": "9819979816"
+  },
+  {
+    "id": "shop_52_drive_safe_car_accessories",
+    "name": "Drive Safe Car Accessories",
+    "displayPhone": "84018 33204",
+    "cleanPhone": "8401833204"
+  },
+  {
+    "id": "shop_53_sai_car_decor",
+    "name": "Sai Car Decor",
+    "displayPhone": "83081 33555",
+    "cleanPhone": "8308133555"
+  },
+  {
+    "id": "shop_54_maharashtra_car_decor",
+    "name": "Maharashtra Car Decor",
+    "displayPhone": "95615 55764",
+    "cleanPhone": "9561555764"
+  },
+  {
+    "id": "shop_55_rajendra_motor_stores",
+    "name": "Rajendra Motor Stores",
+    "displayPhone": "85548 03300",
+    "cleanPhone": "8554803300"
+  },
+  {
+    "id": "shop_56_mk_car_accessories",
+    "name": "Mk Car Accessories",
+    "displayPhone": "98223 63577",
+    "cleanPhone": "9822363577"
+  },
+  {
+    "id": "shop_57_j_m_car_decor___accessories",
+    "name": "J M CAR DECOR & ACCESSORIES",
+    "displayPhone": "81284 67700",
+    "cleanPhone": "8128467700"
+  },
+  {
+    "id": "shop_58_ar_car_decor_and_accessories",
+    "name": "AR Car Decor and Accessories",
+    "displayPhone": "90491 43506",
+    "cleanPhone": "9049143506"
+  },
+  {
+    "id": "shop_59_gomechanic_accessories",
+    "name": "GoMechanic Accessories",
+    "displayPhone": "83989 70970",
+    "cleanPhone": "8398970970"
+  },
+  {
+    "id": "shop_60_shree_auto_agency",
+    "name": "Shree Auto Agency",
+    "displayPhone": "96733 66233",
+    "cleanPhone": "9673366233"
+  },
+  {
+    "id": "shop_61_orion_motors",
+    "name": "ORION MOTORS",
+    "displayPhone": "70306 08052",
+    "cleanPhone": "7030608052"
+  },
+  {
+    "id": "shop_62_manaswi_music___car_accessories",
+    "name": "Manaswi music & car accessories",
+    "displayPhone": "72081 98681",
+    "cleanPhone": "7208198681"
+  },
+  {
+    "id": "shop_63_cars_pro_accessories",
+    "name": "CARS PRO Accessories",
+    "displayPhone": "73878 35308",
+    "cleanPhone": "7387835308"
+  },
+  {
+    "id": "shop_64_shree_ganesh_auto_accessories",
+    "name": "Shree Ganesh Auto Accessories",
+    "displayPhone": "77448 55199",
+    "cleanPhone": "7744855199"
+  },
+  {
+    "id": "shop_65_new_universal_car_shopee",
+    "name": "New Universal Car Shopee",
+    "displayPhone": "93253 64348",
+    "cleanPhone": "9325364348"
+  },
+  {
+    "id": "shop_66_rajguru_enterprises",
+    "name": "Rajguru Enterprises",
+    "displayPhone": "98204 70214",
+    "cleanPhone": "9820470214"
+  },
+  {
+    "id": "shop_67_new_alka_car_accessories",
+    "name": "NEW ALKA CAR ACCESSORIES",
+    "displayPhone": "085111 77117",
+    "cleanPhone": "8511177117"
+  },
+  {
+    "id": "shop_68_bismillah_automobiles",
+    "name": "Bismillah Automobiles",
+    "displayPhone": "098221 09270",
+    "cleanPhone": "9822109270"
+  },
+  {
+    "id": "shop_69_blackbuck_gps_suvidha",
+    "name": "Blackbuck GPS SUVIDHA",
+    "displayPhone": "95522 81705",
+    "cleanPhone": "9552281705"
+  },
+  {
+    "id": "shop_70_choure_automobiles",
+    "name": "Choure Automobiles",
+    "displayPhone": "094216 83465",
+    "cleanPhone": "9421683465"
+  },
+  {
+    "id": "shop_71_the_car_stylers",
+    "name": "The Car Stylers",
+    "displayPhone": "098606 51426",
+    "cleanPhone": "9860651426"
+  },
+  {
+    "id": "shop_72_shri_sai_music_store",
+    "name": "Shri sai music store",
+    "displayPhone": "77410 34577",
+    "cleanPhone": "7741034577"
+  },
+  {
+    "id": "shop_73_gangotri_auto_spare",
+    "name": "Gangotri Auto Spare",
+    "displayPhone": "94040 83808",
+    "cleanPhone": "9404083808"
+  },
+  {
+    "id": "shop_74_sawera_auto_electricals",
+    "name": "Sawera Auto-Electricals",
+    "displayPhone": "86984 22512",
+    "cleanPhone": "8698422512"
+  }
+];
+
+        const STORAGE_KEY = 'maharashtra_whatsapp_data_v2';
+        let currentFilter = 'all';
+        let searchQuery = '';
+
+        // LocalStorage Helpers
+        function getSavedState() {
+            try {
+                const raw = localStorage.getItem(STORAGE_KEY);
+                return raw ? JSON.parse(raw) : {};
+            } catch (e) {
+                console.error('Storage error:', e);
+                return {};
+            }
+        }
+
+        function setSavedState(state) {
+            try {
+                localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+            } catch (e) {
+                console.error('Storage error:', e);
+            }
+        }
+
+        // Show toast notification
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            toast.textContent = msg;
+            toast.classList.add('show');
+            setTimeout(() => toast.classList.remove('show'), 2600);
+        }
+
+        // Render Table
+        function renderTable() {
+            const savedState = getSavedState();
+            const tbody = document.getElementById('shopTableBody');
+            tbody.innerHTML = '';
+
+            let completedCount = 0;
+            const total = SHOPS_DATA.length;
+
+            // Pre-calculate overall stats
+            SHOPS_DATA.forEach(shop => {
+                if (savedState[shop.id]) completedCount++;
+            });
+
+            const pendingCount = total - completedCount;
+
+            // Update UI KPIs
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('completedCount').textContent = completedCount;
+            document.getElementById('pendingCount').textContent = pendingCount;
+            document.getElementById('tabAllCount').textContent = total;
+            document.getElementById('tabContactedCount').textContent = completedCount;
+            document.getElementById('tabPendingCount').textContent = pendingCount;
+
+            const progressPct = total > 0 ? Math.round((completedCount / total) * 100) : 0;
+            document.getElementById('progressBar').style.width = progressPct + '%';
+
+            // Filter shops
+            const q = searchQuery.toLowerCase().trim();
+            const filteredShops = SHOPS_DATA.filter((shop, idx) => {
+                const isChecked = !!savedState[shop.id];
+
+                // Filter tab
+                if (currentFilter === 'contacted' && !isChecked) return false;
+                if (currentFilter === 'pending' && isChecked) return false;
+
+                // Search query
+                if (q) {
+                    const matchName = shop.name.toLowerCase().includes(q);
+                    const matchPhone = shop.displayPhone.toLowerCase().includes(q);
+                    if (!matchName && !matchPhone) return false;
+                }
+                return true;
+            });
+
+            const noResults = document.getElementById('noResults');
+            if (filteredShops.length === 0) {
+                noResults.style.display = 'block';
+            } else {
+                noResults.style.display = 'none';
+            }
+
+            let visibleCheckedCount = 0;
+
+            filteredShops.forEach((shop, index) => {
+                const isChecked = !!savedState[shop.id];
+                if (isChecked) visibleCheckedCount++;
+
+                const tr = document.createElement('tr');
+                tr.setAttribute('data-id', shop.id);
+                if (isChecked) tr.classList.add('completed');
+
+                // Build WhatsApp Link
+                let waButtonHtml = '<span class="disabled-link">-</span>';
+                if (shop.cleanPhone && shop.cleanPhone.length >= 9) {
+                    const waUrl = `https://wa.me/91${shop.cleanPhone}`;
+                    waButtonHtml = `<a href="${waUrl}" target="_blank" class="whatsapp-btn" data-id="${shop.id}">
+                        <svg class="wa-icon" viewBox="0 0 24 24" width="16" height="16" fill="currentColor">
+                            <path d="M.057 24l1.687-6.163c-1.041-1.804-1.588-3.849-1.587-5.946.003-6.556 5.338-11.891 11.893-11.891 3.181.001 6.167 1.24 8.413 3.488 2.245 2.248 3.481 5.236 3.48 8.414-.003 6.557-5.338 11.892-11.893 11.892-1.99-.001-3.951-.5-5.688-1.448l-6.305 1.654zm6.597-3.807c1.676.995 3.276 1.591 5.392 1.592 5.448 0 9.886-4.434 9.889-9.885.002-5.462-4.415-9.89-9.881-9.892-5.452 0-9.887 4.434-9.889 9.884-.001 2.225.651 3.891 1.746 5.634l-.999 3.648 3.742-.981zm11.387-5.464c-.074-.124-.272-.198-.57-.347-.297-.149-1.758-.868-2.031-.967-.272-.099-.47-.149-.669.149-.198.297-.768.967-.941 1.165-.173.198-.347.223-.644.074-.297-.149-1.255-.462-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.297-.347.446-.521.151-.172.2-.296.3-.495.099-.198.05-.372-.025-.521-.075-.148-.669-1.611-.916-2.206-.242-.579-.487-.501-.669-.51l-.57-.01c-.198 0-.52.074-.792.372s-1.04 1.016-1.04 2.479 1.065 2.876 1.213 3.074c.149.198 2.095 3.2 5.076 4.487.709.306 1.263.489 1.694.626.712.226 1.36.194 1.872.118.571-.085 1.758-.719 2.006-1.413.248-.695.248-1.29.173-1.414z"/>
+                        </svg>
+                        WhatsApp
+                    </a>`;
+                }
+
+                // Global Shop Index Number
+                const origIndex = SHOPS_DATA.findIndex(s => s.id === shop.id) + 1;
+
+                tr.innerHTML = `
+                    <td class="td-num">${origIndex}</td>
+                    <td class="checkbox-cell">
+                        <input type="checkbox" class="row-checkbox" data-id="${shop.id}" ${isChecked ? 'checked' : ''}>
+                    </td>
+                    <td class="td-name"><strong>${shop.name}</strong></td>
+                    <td class="td-phone ${shop.cleanPhone ? '' : 'not-provided'}">${shop.displayPhone}</td>
+                    <td class="td-wa">${waButtonHtml}</td>
+                    <td class="status-cell">
+                        <span class="status-badge ${isChecked ? 'contacted' : 'pending'}">
+                            ${isChecked ? 'Contacted ✔' : 'Pending'}
+                        </span>
+                    </td>
+                `;
+
+                tbody.appendChild(tr);
+            });
+
+            // Update Select All Checkbox state
+            const selectAllCb = document.getElementById('selectAll');
+            if (selectAllCb) {
+                const totalVisible = filteredShops.length;
+                selectAllCb.checked = totalVisible > 0 && visibleCheckedCount === totalVisible;
+                selectAllCb.indeterminate = visibleCheckedCount > 0 && visibleCheckedCount < totalVisible;
+            }
+
+            attachRowListeners();
+        }
+
+        // Attach Event Listeners to rendered elements
+        function attachRowListeners() {
+            // Checkbox toggle
+            document.querySelectorAll('.row-checkbox').forEach(cb => {
+                cb.addEventListener('change', function() {
+                    const id = this.getAttribute('data-id');
+                    const savedState = getSavedState();
+                    savedState[id] = this.checked;
+                    setSavedState(savedState);
+                    renderTable();
+                });
+            });
+
+            // WhatsApp button click -> Auto check & persist
+            document.querySelectorAll('.whatsapp-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    const id = this.getAttribute('data-id');
+                    const savedState = getSavedState();
+                    savedState[id] = true;
+                    setSavedState(savedState);
+                    // Re-render after a tiny timeout to not block window open
+                    setTimeout(renderTable, 50);
+                });
+            });
+        }
+
+        // Setup Header & Toolbar Events
+        function setupControls() {
+            // Search Input
+            const searchInput = document.getElementById('searchInput');
+            const clearSearchBtn = document.getElementById('clearSearch');
+
+            searchInput.addEventListener('input', function(e) {
+                searchQuery = e.target.value;
+                clearSearchBtn.style.display = searchQuery ? 'block' : 'none';
+                renderTable();
+            });
+
+            clearSearchBtn.addEventListener('click', function() {
+                searchInput.value = '';
+                searchQuery = '';
+                clearSearchBtn.style.display = 'none';
+                renderTable();
+            });
+
+            // Filter Tabs
+            document.querySelectorAll('.filter-btn').forEach(btn => {
+                btn.addEventListener('click', function() {
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                    this.classList.add('active');
+                    currentFilter = this.getAttribute('data-filter');
+                    renderTable();
+                });
+            });
+
+            // Select All Checkbox
+            const selectAllCb = document.getElementById('selectAll');
+            selectAllCb.addEventListener('change', function() {
+                const isChecked = this.checked;
+                const savedState = getSavedState();
+
+                // Apply to currently visible rows
+                document.querySelectorAll('.row-checkbox').forEach(cb => {
+                    const id = cb.getAttribute('data-id');
+                    savedState[id] = isChecked;
+                });
+
+                setSavedState(savedState);
+                renderTable();
+            });
+
+            // Reset All Button
+            document.getElementById('resetBtn').addEventListener('click', function() {
+                if (confirm('Are you sure you want to reset all checked progress?')) {
+                    localStorage.removeItem(STORAGE_KEY);
+                    showToast('All progress reset successfully');
+                    renderTable();
+                }
+            });
+
+            // Copy Contacted Numbers
+            document.getElementById('copyContactedBtn').addEventListener('click', function() {
+                const savedState = getSavedState();
+                const contactedNumbers = SHOPS_DATA
+                    .filter(s => savedState[s.id] && s.cleanPhone)
+                    .map(s => `${s.name}: ${s.displayPhone}`);
+
+                if (contactedNumbers.length === 0) {
+                    showToast('No contacted shops yet');
+                    return;
+                }
+
+                navigator.clipboard.writeText(contactedNumbers.join('\n'))
+                    .then(() => showToast(`Copied ${contactedNumbers.length} contacted shops to clipboard!`))
+                    .catch(() => showToast('Failed to copy to clipboard'));
+            });
+        }
+
+        // Initialize on DOM load
+        document.addEventListener('DOMContentLoaded', () => {
+            setupControls();
+            renderTable();
+        });
+    </script>
+</body>
+</html>
